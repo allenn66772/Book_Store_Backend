@@ -1,5 +1,5 @@
 const books = require("../model/bookModel");
-const stripe = require('stripe')(process.env.stripSecretKey);
+const stripe = require('stripe')(process.env.stripeSecretKey);
 
 exports.addBookController = async (req, res) => {
     console.log("inside add book controller");
