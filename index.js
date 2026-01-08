@@ -13,7 +13,7 @@ const router=require("./router")
 //11 import connection file
 require("./db/connection")
 
-//2 create port
+//2 create server
 const bookStoreServer = express()
 
 //6 tell server to use cors and cors should only used after creating port
@@ -43,3 +43,4 @@ bookStoreServer.get("/",(req,res)=>{
 // bookStoreServer.post("/",(req,res)=>{
 //     res.status(200).send(`Post Method`)
 // }) 
+

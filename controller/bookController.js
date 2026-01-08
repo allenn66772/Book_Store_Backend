@@ -150,40 +150,75 @@ exports.updateBookController = async (req, res) => {
 }
 //make payment
 exports.makeBookPaymentController = async (req, res) => {
-    console.log(`Inside Make Payment Controller`);
-    const { _id, title, author, noOfPages, imageUrl, price, dPrice, abstract, publisher, language, isbn, category, uploadImages } = req.body
-    const userMail = req.payload
-    try {
-        const updateBookPayment = await books.findByIdAndUpdate({ _id }, { title, author, noOfPages, imageUrl, price, dPrice, abstract, publisher, language, isbn, category, uploadImages, status: "sold", boughtBy: userMail }, { new: true })
-        console.log(updateBookPayment);
-        const line_items = [{
-            price_data: {
-                currency: "usd",
-                product_data: {
-                    name: title,
-                    description: `${author} | ${publisher}`,
-                    images: [imageUrl],
-                    metadata: {
-                        title, author, noOfPages, imageUrl, price, dPrice, abstract, publisher, language, isbn, category, status: "sold", boughtBy: userMail
-                    }
-                },
-                unit_amount: Math.round(dPrice * 100)
-            },
-            quantity: 1
-        }]
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items,
-            mode: 'payment',
-            // success_url: 'http://localhost:5173/payment-success',
-            // cancel_url: "http://localhost:5173/payment-error",
-             success_url: 'https://book-store-alpha-nine.vercel.app/payment-success',
-            cancel_url: "https://book-store-alpha-nine.vercel.app/payment-error",
-        });
-        console.log(session);
-        res.status(200).json({ checkoutSessionUrl: session.url })
-        // res.status(200).json("Success response received")
-    }catch (error) {
-        res.status(500).json(error)
-    }
-}
+  console.log("Inside Make Payment Controller");
+
+  const {
+    _id,
+    title,
+    author,
+    noOfPages,
+    imageURL,
+    price,
+    abstract,
+    publisher,
+    language,
+    isbn,
+    category,
+    uploadImages,
+  } = req.body;
+
+  const userMail = req.payload;
+
+  try {
+    const updateBookPayment = await books.findByIdAndUpdate(
+      _id,
+      {
+        title,
+        author,
+        noOfPages,
+        imageURL,
+        price,
+        abstract,
+        publisher,
+        language,
+        isbn,
+        category,
+        uploadImages,
+        status: "sold",
+        boughtBy: userMail,
+      },
+      { new: true }
+    );
+
+    const line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: title,
+            description: `${author} | ${publisher}`,
+            images: imageURL ? [imageURL] : [],
+          },
+          unit_amount: Math.round(Number(price) * 100),
+        },
+        quantity: 1,
+      },
+    ];
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items,
+      mode: "payment",
+      success_url: "http://localhost:5173/payment-success",
+      cancel_url: "http://localhost:5173/payment-error",
+    });
+
+    res.status(200).json({
+      checkoutSessionUrl: session.url,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error.message);
+  }
+};
