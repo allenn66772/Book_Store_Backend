@@ -210,8 +210,8 @@ exports.makeBookPaymentController = async (req, res) => {
       line_items,
       mode: "payment",
     //   success_url: "http://localhost:5173/payment-success",
-      success_url:"https://book-store-frontend-khaki.vercel.app/payment-success",
-      cancel_url:"https://book-store-frontend-khaki.vercel.app/payment-error"
+      success_url:"https://book-store-frontend-gules-two.vercel.app/payment-success",
+      cancel_url:"https://book-store-frontend-gules-two.vercel.app/payment-error"
     //   cancel_url: "http://localhost:5173/payment-error",
     });
 
